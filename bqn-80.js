@@ -83,14 +83,8 @@ function setup(div) {
     handle = setInterval(update, 16)
   }
 
-  if (location.hash.length > 1) {
-    if (location.hash.startsWith("#c=")) {
-      source.value = new TextDecoder().decode(
-        new Uint8Array([...atob(location.hash.slice(3))].map(c => c.charCodeAt(0))))
-      reload()
-    }
-  } else {
-    source.value = "{136‿240⥊16|𝕨+↕16}"
+  if (source.value == null) {
+    source.value = source.innerText || "{136‿240⥊16|𝕨+↕16}"
   }
 
   // Set up document listeners
