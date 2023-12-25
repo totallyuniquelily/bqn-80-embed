@@ -79,7 +79,6 @@ function setup(div) {
     }
     reset()
     div.getElementsByClassName("charcount")[0].innerText = `${src.length} chars`
-    location.hash = "c=" + btoa(String.fromCharCode(...new TextEncoder().encode(source.value)))
     handle = setInterval(update, 16)
   }
 
