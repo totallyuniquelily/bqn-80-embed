@@ -18,15 +18,70 @@ const palette = [
   "#333c57",
 ].map(v => [16, 8, 0].map(b => parseInt(v.slice(1), 16) >> b & 0xff))
 
+
+function getCanvasCtx(div) {
+  const canv = div.getElementsByClassName("canvas")[0] || (() => {
+    let canv = document.createElement("canvas")
+    canv.width = 240
+    canv.height = 136
+    canv.style = "display:block; width: 100%; image-rendering: pixelated; margin-bottom:4px;"
+    canv.classList.add("canvas")
+    div.prepend(canv)
+    return canv
+  })()
+
+  return canv.getContext('2d')
+}
+
+function getErrorDiv(div) {
+  return div.getElementsByClassName("error")[0] || (() => {
+    let error = document.createElement("div")
+    error.style = "color: brown"
+    div.prepend(error)
+    return error
+  })()
+}
+
+function getButton(div, type, default_text) {
+  return div.getElementsByClassName("button-" + type)[0] || (() => {
+    let btn = document.createElement("button")
+    btn.classList.add("button-" + type)
+    btn.textContent = default_text
+    div.prepend(btn)
+    return btn
+  })()
+}
+
+function getFrameTimeDiv(div) {
+  return div.getElementsByClassName("frametime")[0] || (() => {
+    let ftd = document.createElement("div")
+    ftd.style = "float:right"
+    div.prepend(ftd)
+    return ftd
+  })()
+}
+
+function getCharCountDiv(div) {
+  return div.getElementsByClassName("charcount")[0] || (() => {
+    let charcount = document.createElement("div")
+    charcount.style = "float: right"
+    return div.appendChild(charcount)
+  })()
+}
+
 function setup(div) {
   const source = div.getElementsByClassName("source")[0]
-  const error = div.getElementsByClassName("error")[0]
-  const ctx = div.getElementsByClassName("canvas")[0].getContext('2d')
+  const error = getErrorDiv(div)
+
+  const button_stop = getButton(div, "stop", "STOP!")
+  const button_reload = getButton(div, "reload", "RUN!")
+
+  const frameTimeDiv = getFrameTimeDiv(div)
+  const charcount = getCharCountDiv(div)
+
+  const ctx = getCanvasCtx(div)
   ctx.fillRect(0, 0, 240, 136)
   const img = ctx.getImageData(0, 0, 240, 136)
-
-  const button_reload = div.getElementsByClassName("button-reload")[0]
-  const button_stop = div.getElementsByClassName("button-stop")[0]
 
   let handle = null
   let t = 0
@@ -66,7 +121,7 @@ function setup(div) {
     const end = Date.now()
     if (end - lastFrametime > 300) {
       lastFrametime = end
-      div.getElementsByClassName("frametime")[0].innerText = `${end - start} ms per frame`
+      frameTimeDiv.innerText = `${end - start} ms per frame`
     }
   }
   function reload() {
@@ -78,7 +133,7 @@ function setup(div) {
       return;
     }
     reset()
-    div.getElementsByClassName("charcount")[0].innerText = `${src.length} chars`
+    charcount.innerText = `${src.length} chars`
     handle = setInterval(update, 16)
   }
 
